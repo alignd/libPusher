@@ -53,4 +53,6 @@
  */
 - (void)triggerEvent:(NSString *)eventName onChannel:(NSString *)channelName data:(id)eventData socketID:(NSString *)socketID;
 
+- (void)postMessage:(NSString *)messageId onChannel:(NSString *)channelName data:(id)eventData socketID:(NSString *)socketID;
+
 @end

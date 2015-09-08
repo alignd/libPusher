@@ -71,4 +71,39 @@
   [operationQueue addOperation:operation];
 }
 
+
+- (void)postMessage:(NSString *)messageId onChannel:(NSString *)channelName data:(id)eventData socketID:(NSString *)socketID
+{
+    NSString *path = [NSString stringWithFormat:@"/apps/%@/channels/%@/messages/%@", appID, channelName, messageId];
+    NSData *bodyData = [[PTJSON JSONParser] JSONDataFromObject:eventData];
+    NSString *bodyString = [[NSString alloc] initWithData:bodyData encoding:NSUTF8StringEncoding];
+    
+    NSMutableDictionary *queryParameters = [NSMutableDictionary dictionary];
+    
+    queryParameters[@"body_md5"] = [[bodyString MD5Hash] lowercaseString];
+    queryParameters[@"auth_key"] = key;
+    queryParameters[@"auth_timestamp"] = @((double)time(NULL));
+    queryParameters[@"auth_version"] = @"1.0";
+    queryParameters[@"name"] = @"vl-msg-post";
+    
+    if (socketID) {
+        queryParameters[@"socket_id"] = socketID;
+    }
+    
+    NSString *signatureString = [NSString stringWithFormat:@"POST\n%@\n%@", path, [queryParameters sortedQueryString]];
+    
+    queryParameters[@"auth_signature"] = [signatureString HMACDigestUsingSecretKey:secretKey];
+    
+    NSString *URLString = [NSString stringWithFormat:@"http://%@%@?%@", host, path, [queryParameters sortedQueryString]];
+    
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:URLString]];
+    [request setHTTPBody:bodyData];
+    [request setHTTPMethod:@"POST"];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
+    
+    PTURLRequestOperation *operation = [[PTURLRequestOperation alloc] initWithURLRequest:request];
+    [operationQueue addOperation:operation];
+}
+
+
 @end
