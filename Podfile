@@ -4,12 +4,14 @@
 # unless you want to install new development dependencies as the Pods directory
 # is part of the source tree.
 #
-platform :ios, :deployment_target => '5.0'
+platform :ios, :deployment_target => '6.0'
 
 inhibit_all_warnings!
 
 pod 'Reachability', '~> 3.1'
-pod 'SocketRocket', '0.3.1-beta2'
+pod 'SocketRocket', 
+	:git=> 'git@github.com:alignd/SocketRocket.git', 
+	:branch=> 'alignd-fork'
 pod 'ReactiveCocoa', '~> 2.1'
 
 post_install do |installer|
